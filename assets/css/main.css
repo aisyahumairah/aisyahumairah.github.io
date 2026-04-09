@@ -984,6 +984,22 @@ section,
   font-weight: 600;
 }
 
+.skills-category-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 2rem 0 1.5rem 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid color-mix(in srgb, var(--accent-color), transparent 80%);
+  color: var(--heading-color);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.skills-category-title i {
+  color: var(--accent-color);
+}
+
 .skills .skill-box p {
   font-size: 0.9rem;
   margin-bottom: 0.8rem;
@@ -1043,8 +1059,9 @@ section,
   left: 20%;
   top: 0;
   height: 100%;
-  width: 2px;
-  background-color: color-mix(in srgb, var(--accent-color), transparent 85%);
+  width: 3px;
+  background: linear-gradient(to bottom, var(--accent-color), color-mix(in srgb, var(--accent-color), transparent 80%), var(--accent-color));
+  border-radius: 10px;
 }
 
 .resume .resume-wrapper .timeline .timeline-item {
@@ -1052,6 +1069,15 @@ section,
   align-items: flex-start;
   margin-bottom: 2.5rem;
   position: relative;
+  padding: 1.5rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.resume .resume-wrapper .timeline .timeline-item:hover {
+  background-color: color-mix(in srgb, var(--accent-color), transparent 97%);
+  transform: translateX(10px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
 .resume .resume-wrapper .timeline .timeline-item:last-child {
@@ -1079,10 +1105,20 @@ section,
   position: absolute;
   left: calc(20% + 1px);
   transform: translateX(-50%);
-  width: 1rem;
-  height: 1rem;
+  width: 1.2rem;
+  height: 1.2rem;
   background-color: var(--accent-color);
   border-radius: 50%;
+  border: 4px solid var(--background-color);
+  box-shadow: 0 0 15px var(--accent-color);
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.resume .resume-wrapper .timeline .timeline-item:hover .timeline-dot {
+  transform: translateX(-50%) scale(1.3);
+  box-shadow: 0 0 25px var(--accent-color);
+  background-color: var(--heading-color);
 }
 
 .resume .resume-wrapper .timeline .timeline-item .timeline-right {
@@ -1141,6 +1177,38 @@ section,
     width: 100%;
     padding-left: 2.5rem;
   }
+}
+
+.project-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.skill-badge {
+  background-color: color-mix(in srgb, var(--accent-color), transparent 92%);
+  color: var(--accent-color);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 50px;
+  border: 1px solid color-mix(in srgb, var(--accent-color), transparent 85%);
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.skill-badge:hover {
+  background-color: var(--accent-color);
+  color: var(--contrast-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.skill-badge i {
+  font-size: 0.85rem;
 }
 
 /*--------------------------------------------------------------
