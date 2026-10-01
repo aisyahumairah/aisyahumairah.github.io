@@ -296,17 +296,18 @@
     /* Skills: segmented meters */
     .skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px 56px; }
     .skill-group h3 { font-size: 1.05rem; margin: 0 0 14px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
-    .meter-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 16px; margin-bottom: 12px; }
-    .meter-row span { font-size: 15px; }
-    .meter-row small { font-size: 13px; color: var(--ink-soft); text-align: right; }
-    .meter { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(20, 1fr); gap: 2px; height: 8px; }
-    .meter i { background: var(--meter-off); border-radius: 1px; }
-    .meter i.on { background: var(--ink); }
-    .meter.hi i.on { background: var(--accent); }
-    .legend { font-size: 14px; color: var(--ink-soft); margin: 32px 0 0; display: flex; gap: 20px; flex-wrap: wrap; }
-    .legend span::before { content: ""; display: inline-block; width: 14px; height: 8px; margin-right: 6px; border-radius: 1px; vertical-align: middle; }
-    .legend .l-hi::before { background: var(--accent); }
-    .legend .l-on::before { background: var(--ink); }
+    .meter-row {
+      display: grid; grid-template-columns: 1fr auto 56px; align-items: center; gap: 14px;
+      padding: 9px 0; border-bottom: 1px dashed var(--line);
+    }
+    .meter-row:last-child { border-bottom: 0; }
+    .meter-row > span:first-child { font-size: 15px; }
+    .meter-row small { font-size: 13px; font-weight: 500; color: var(--ink-soft); }
+    .meter { display: flex; gap: 3px; }
+    .meter i { width: 18px; height: 8px; border-radius: 2px; background: var(--meter-off); }
+    .meter i.on { background: var(--ink-soft); }
+    .lv-high .meter i.on { background: var(--accent); }
+    .lv-high small { color: var(--accent); }
 
     /* Education */
     .edu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
@@ -571,7 +572,6 @@
       <div class="wrap">
         <div class="sec-head"><h2>Skills</h2><code>top --skills</code></div>
         <div class="skills" id="skillsGrid"></div>
-        <p class="legend"><span class="l-hi">90% and above</span><span class="l-on">Below 90%</span></p>
       </div>
     </section>
 
@@ -637,24 +637,26 @@
   <script>
   (function () {
     /* ---------- Skills data (single source for page + terminal) ---------- */
+    // Proficiency: "High", "Medium" or "Low"
     const SKILLS = [
-      { group: "Programming languages", items: [["PHP", 90], ["HTML", 90], ["CSS", 90], ["Java", 85], ["JavaScript", 80], ["C++ / C#", 65]] },
-      { group: "Frameworks & libraries", items: [["Laravel", 90], ["Bootstrap", 90], ["Livewire", 85], ["ASP.NET Core", 50]] },
-      { group: "Servers & databases", items: [["IT support", 95], ["MySQL / PostgreSQL", 85], ["Linux / Ubuntu", 80], ["Windows Server", 80]] },
-      { group: "Tools & platforms", items: [["Git & GitHub", 90], ["Troubleshooting", 90], ["Command line", 85], ["Cloud services", 70]] },
-      { group: "Soft skills", items: [["Teamwork", 95], ["Problem solving", 90], ["Time management", 90], ["Communication", 85]] },
-      { group: "Languages", items: [["Malay", 90], ["English", 75], ["Arabic", 40], ["Mandarin", 20]] }
+      { group: "Programming languages", items: [["PHP", "High"], ["HTML", "High"], ["CSS", "High"], ["Java", "High"], ["JavaScript", "High"], ["C++ / C#", "Medium"]] },
+      { group: "Frameworks & libraries", items: [["Laravel", "High"], ["Bootstrap", "High"], ["Livewire", "Medium"], ["ASP.NET Core", "Low"]] },
+      { group: "Servers & databases", items: [["IT support", "High"], ["MySQL / PostgreSQL", "High"], ["Linux / Ubuntu", "High"], ["Windows Server", "High"]] },
+      { group: "Tools & platforms", items: [["Git & GitHub", "High"], ["Troubleshooting", "High"], ["Command line", "High"], ["Cloud services", "Medium"]] },
+      { group: "Soft skills", items: [["Teamwork", "High"], ["Problem solving", "High"], ["Time management", "High"], ["Communication", "High"]] },
+      { group: "Languages", items: [["Malay", "High"], ["English", "Medium"], ["Arabic", "Low"], ["Mandarin", "Low"]] }
     ];
+    const LEVEL = { High: 3, Medium: 2, Low: 1 };
 
     const grid = document.getElementById("skillsGrid");
     SKILLS.forEach(g => {
       const div = document.createElement("div");
       div.className = "skill-group";
-      div.innerHTML = `<h3>${g.group}</h3>` + g.items.map(([name, pct]) => {
-        const on = Math.round(pct / 5);
-        const cells = Array.from({ length: 20 }, (_, i) => `<i class="${i < on ? "on" : ""}"></i>`).join("");
-        return `<div class="meter-row"><span>${name}</span><small>${pct}%</small>
-          <div class="meter ${pct >= 90 ? "hi" : ""}" role="meter" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${name}">${cells}</div></div>`;
+      div.innerHTML = `<h3>${g.group}</h3>` + g.items.map(([name, level]) => {
+        const n = LEVEL[level];
+        const cells = [1, 2, 3].map(i => `<i class="${i <= n ? "on" : ""}"></i>`).join("");
+        return `<div class="meter-row lv-${level.toLowerCase()}"><span>${name}</span>
+          <span class="meter" role="img" aria-label="${name}: ${level}">${cells}</span><small aria-hidden="true">${level}</small></div>`;
       }).join("");
       grid.appendChild(div);
     });
@@ -746,7 +748,7 @@
     const out = document.getElementById("termOut"), input = document.getElementById("termIn"), body = document.getElementById("termBody");
     const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
     const line = (html, cls) => { const p = document.createElement("p"); if (cls) p.className = cls; p.innerHTML = html; out.appendChild(p); body.scrollTop = body.scrollHeight; };
-    const bar = pct => "█".repeat(Math.round(pct / 10)) + "░".repeat(10 - Math.round(pct / 10));
+    const bar = lv => "■".repeat(LEVEL[lv]) + "□".repeat(3 - LEVEL[lv]);
 
     const CMDS = {
       help: () => [
@@ -783,7 +785,12 @@
         ...PROJECTS.map(p => `<a href="#" data-open="${p.id}" class="ok" style="text-decoration:none">${(p.id + "/").padEnd(12)}</a> ${p.name}`),
         `<span class="dim">Click a name or run</span> <span class="ok">open mrbs</span> <span class="dim">for details.</span>`
       ],
-      skills: () => SKILLS.slice(0, 4).flatMap(g => g.items.slice(0, 3).map(([n, p]) => `${n.padEnd(19)} <span class="ok">${bar(p)}</span> ${p}%`)),
+      skills: () => {
+        const tech = SKILLS.slice(0, 4).flatMap(g => g.items);
+        return ["High", "Medium", "Low"].map(lv =>
+          `<span class="ok">${bar(lv)}</span> <span class="str">${lv.padEnd(6)}</span> ${tech.filter(t => t[1] === lv).map(t => t[0]).join(", ")}`)
+          .concat([`<span class="dim">Full list: <a href="#skills" style="color:inherit">scroll to Skills</a></span>`]);
+      },
       stack: () => [
         `<span class="dim">backend</span>   PHP · Laravel · Livewire`,
         `<span class="dim">frontend</span>  HTML · CSS · JavaScript · jQuery · Bootstrap`,
