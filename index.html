@@ -345,7 +345,7 @@
 
   <header class="nav">
     <div class="wrap">
-      <a class="brand" href="#top">aisyah<b>@</b>mbpp:~$</a>
+      <a class="brand" href="#top">aisyah<b>@</b>dev:~$</a>
       <button class="menu-btn" aria-expanded="false" aria-controls="menu">Menu</button>
       <ul id="menu">
         <li><a href="#about">About</a></li>
@@ -383,11 +383,11 @@
         </div>
 
         <div class="term" aria-label="Interactive terminal. Type a command such as help, projects or skills.">
-          <div class="term-bar"><i></i><i></i><i></i><span>aisyah@mbpp: ~/portfolio</span></div>
+          <div class="term-bar"><i></i><i></i><i></i><span>aisyah@dev: ~/portfolio</span></div>
           <div class="term-body" id="termBody">
             <div id="termOut" aria-live="polite"></div>
             <label class="term-input" for="termIn">
-              <span class="pr">aisyah@mbpp:~$</span>
+              <span class="pr">aisyah@dev:~$</span>
               <input id="termIn" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Terminal command">
             </label>
           </div>
@@ -814,7 +814,7 @@
     const cmdHistory = []; let hIdx = 0;
     function run(raw) {
       const cmd = raw.trim().toLowerCase();
-      line(`<span class="pr">aisyah@mbpp:~$</span> ${esc(raw)}`);
+      line(`<span class="pr">aisyah@dev:~$</span> ${esc(raw)}`);
       if (!cmd) return;
       cmdHistory.push(raw); hIdx = cmdHistory.length;
       const key = cmd.split(/\s+/)[0];
@@ -851,7 +851,7 @@
     const typing = document.createElement("p");
     out.appendChild(typing);
     setTimeout(function tick() {
-      typing.innerHTML = `<span class="pr">aisyah@mbpp:~$</span> ${first.slice(0, ++i)}`;
+      typing.innerHTML = `<span class="pr">aisyah@dev:~$</span> ${first.slice(0, ++i)}`;
       if (i < first.length) setTimeout(tick, 90);
       else setTimeout(() => {
         typing.remove(); run(first);
