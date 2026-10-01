@@ -289,6 +289,7 @@
       dialog.pd { width: 100vw; max-width: 100vw; max-height: 92dvh; margin: auto 0 0; border-radius: 14px 14px 0 0; }
       .pd-body { padding: 22px 20px 4px; }
       .pd-meta { grid-template-columns: 1fr; }
+        .pd-close span { display: none; }
     }
     @media (prefers-reduced-motion: reduce) { dialog.pd[open] { animation: none; } .proj { transition: none; } }
     body.modal-open { overflow: hidden; }
@@ -488,7 +489,7 @@
             <p>I like learning new tools and getting better at the ones I already use. People who work with me know me as reliable and punctual, and I've picked up communication and leadership skills through organising work across teams.</p>
             <dl class="facts">
               <div><dt>Years in IT</dt><dd>4</dd></div>
-              <div><dt>Systems delivered</dt><dd>5</dd></div>
+              <div><dt>Systems delivered</dt><dd>6</dd></div>
               <div><dt>Users supported</dt><dd>50+</dd></div>
             </dl>
           </div>
@@ -537,9 +538,32 @@
         <div class="sec-head"><h2>Projects</h2><code>ls ~/projects</code></div>
         <div class="projects">
 
-          <article class="proj featured" data-id="mrbs">
+          <article class="proj featured" data-id="homelodge">
             <div class="proj-side">
               <span class="badge">Latest</span>
+              <h3>Homestay Booking System</h3>
+              <span class="code">HomeLodge</span>
+              <p><strong>Full stack developer</strong>UTM Final Year Project</p>
+            </div>
+            <div class="proj-main">
+              <p class="summary">Booking and management platform for a homestay business. Guests book and pay online and get a QR door key for their stay, while hosts, housekeepers and a Super Admin each work from their own view.</p>
+              <ul>
+                <li>Built a booking engine that checks availability against confirmed stays, unpaid holds and blocked dates, with row locks so two guests can never book the same dates.</li>
+                <li>Issued a QR door key for every booking, valid from check-in to check-out. The smart lock checks each scan with the server, so revoking or extending a key takes effect immediately.</li>
+                <li>Built a housekeeping module: cleaning jobs are created from booking events, housekeepers get job-only door access, checklists and photos, and the next guest's key is released only after the unit is cleaned.</li>
+                <li>Integrated online payments behind a gateway contract (ToyyibPay and a sandbox driver) with PDF receipts, tiered refund rules and webhook handling that safely ignores gateway retries.</li>
+                <li>Grew the system into a multi-operator marketplace with host applications, Super Admin approval, earnings and payouts, without migrating any existing data.</li>
+                <li>Implemented role-based access and data isolation with Spatie Permission across four roles. Records outside a user's scope return 404, so operators can't see each other's data.</li>
+                <li>Added real-time guest and host chat with Laravel Reverb, 21 notification types, Google Calendar sync, and occupancy and revenue reports exported to PDF, CSV and XLSX.</li>
+                <li>Logged every significant action to an append-only audit trail and covered the system with 328 passing PHPUnit feature tests.</li>
+              </ul>
+              <ul class="stack"><li>Laravel 13</li><li>PHP 8.3</li><li>MySQL</li><li>Spatie Permission</li><li>Laravel Reverb</li><li>ToyyibPay</li><li>Alpine.js</li><li>Bootstrap 5</li><li>Chart.js</li><li>PHPUnit</li></ul>
+              <button class="open" type="button">View details<span class="sr"> for Homestay Booking System</span></button>
+            </div>
+          </article>
+
+          <article class="proj" data-id="mrbs">
+            <div class="proj-side">
               <h3>Meeting Room Booking System</h3>
               <span class="code">MRBS</span>
               <p><strong>Full stack developer &amp; Scrum Master</strong>UTMSpace project</p>
@@ -966,7 +990,7 @@
       ],
       projects: () => [
         ...PROJECTS.map(p => `<a href="#" data-open="${p.id}" class="ok" style="text-decoration:none">${(p.id + "/").padEnd(12)}</a> ${p.name}`),
-        `<span class="dim">Click a name or run</span> <span class="ok">open mrbs</span> <span class="dim">for details.</span>`
+        `<span class="dim">Click a name or type it, e.g.</span> <span class="ok">${PROJECTS[0].id}</span><span class="dim">, to see details.</span>`
       ],
       skills: () => {
         const tech = SKILLS.slice(0, 4).flatMap(g => g.items);
@@ -992,7 +1016,7 @@
       ls: () => CMDS.projects(),
       open: arg => {
         const p = PROJECTS.find(x => x.id === arg);
-        if (!p) return [`<span class="dim">usage:</span> open &lt;project&gt;  <span class="dim">e.g.</span> <span class="ok">open ${PROJECTS[0].id}</span>`, `<span class="dim">projects: ${PROJECTS.map(x => x.id).join(", ")}</span>`];
+        if (!p) return [`<span class="dim">usage:</span> open &lt;project&gt;  <span class="dim">e.g.</span> <span class="ok">${PROJECTS[0].id}</span>`, `<span class="dim">projects: ${PROJECTS.map(x => x.id).join(", ")}</span>`];
         setTimeout(() => openProject(PROJECTS.indexOf(p)), 150);
         return [`<span class="dim">opening</span> ${p.name}<span class="dim">…</span>`];
       },
@@ -1008,7 +1032,9 @@
       cmdHistory.push(raw); hIdx = cmdHistory.length;
       const key = cmd.split(/\s+/)[0];
       const fn = CMDS[key];
+      const proj = PROJECTS.find(p => p.id === key.replace(/\/$/, ""));
       if (fn) fn(cmd.split(/\s+/)[1]).forEach(l => line(l));
+      else if (proj) CMDS.open(proj.id).forEach(l => line(l));
       else line(`<span class="dim">${esc(key)}: command not found. Type</span> <span class="ok">help</span> <span class="dim">to see what's available.</span>`);
       line("&nbsp;");
     }
@@ -1019,7 +1045,7 @@
       else if (e.key === "ArrowDown") { hIdx = Math.min(cmdHistory.length, hIdx + 1); input.value = cmdHistory[hIdx] || ""; }
       else if (e.key === "Tab") {
         e.preventDefault();
-        const m = Object.keys(CMDS).filter(k => k.startsWith(input.value.trim().toLowerCase()));
+        const m = Object.keys(CMDS).concat(PROJECTS.map(p => p.id)).filter(k => k.startsWith(input.value.trim().toLowerCase()));
         if (m.length === 1) input.value = m[0];
       }
     });
